@@ -1,0 +1,5 @@
+
+*.class
+*.class
+target/classes/it/univpm/progettoPO/ProgettoPoApplication.class
+target/classes/META-INF/maven/it.univpm/progettoPO/pom.properties
