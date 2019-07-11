@@ -16,8 +16,9 @@ public class DataSet implements DataStats {
 	public DataSet() {
 		data = null;
 	}
-	
+	//primo costruttore con numero di errori massimi consentiti nel csv pari a 10
 	public DataSet(String path) {
+		//setData ritorna il numero di errori del json trovati nella procedura di importazione, se si verificano più di 10 errori l'importazione fallisce
 		int e = this.setData(path, 10);
 		if(e > 0)
 			System.out.println("importazione terminata con " + ((e == 10)? "successo" : (10-e) + " errori"));
@@ -27,7 +28,7 @@ public class DataSet implements DataStats {
 		}
 		
 	}
-
+	//metodo sovraccaricato che consente di definire un numero massimo di errori tollerabile, per nessun'errore maxErr = 0
 	public DataSet(String path, int maxErr) {
 		int e = this.setData(path, maxErr);
 		if(e >= 0)
@@ -49,7 +50,9 @@ public class DataSet implements DataStats {
 			String line = fp.readLine();
 			//scarto la riga di intestazione
 			for(line = fp.readLine(); line != null && maxErr >= 0; line = fp.readLine()) {
+				//splitta la riga con il carattere ;
 				String[] meta = line.split(";");
+				//controllo se sono presenti 4 campi, se il numero è diverso decremento maxErr (aggiungo un errore) e scarto la riga passando alla prossima iterazione
 				if(meta.length != 4) {
 					System.out.println("Numero di attributi errato!");
 					maxErr--;
@@ -82,7 +85,7 @@ public class DataSet implements DataStats {
 		}
 		return maxErr;
 	}
-	
+	//verifica che la procedura di importazione sia andata a buon fine, se così non fosse l'ArrayList data = null
 	public boolean isDataNull() {
 		if(data == null)
 			return true;
@@ -102,6 +105,8 @@ public class DataSet implements DataStats {
 		
 		return out;
 	}
+	
+	//serie di metodi per calcolare le statistiche sul dataset
 	
 	private double getAvg(int year) {
 		return this.getSum(year) / data.size();
@@ -156,6 +161,8 @@ public class DataSet implements DataStats {
 		return data.size();
 	}
 	
+	//fornisce il json che contiene tutte le statistiche numeriche
+	
 	public String getNumberStats(int year) {
 		String out = "{\"Year\":" + String.valueOf(year) +", " +
 					 "\"Avg\":" + String.valueOf(this.getAvg(year)) +", " +
@@ -166,13 +173,14 @@ public class DataSet implements DataStats {
 					 "\"Count\":" + String.valueOf(this.getCount(year)) +"}";
 		return out;
 	}
-	
+	// fornisce il json che contiene tutte le statistiche sulle stringhe a seconda della colonna specificata
 	public String getStringStats(String field, int sc) {
 		
 		field.toUpperCase();
 
 		HashMap <String,Integer> hm = new HashMap<String,Integer>();
 		
+		//in base alla colonna selezionata conto le occorrenze degli elementi del campo scelto tramite una hash map <String,Integer>
 		switch(sc) {
 			case 0:
 				for(RecordData rd : data) {
@@ -219,6 +227,8 @@ public class DataSet implements DataStats {
 			break;
 
 		}
+		
+		//terminato il conteggio delle occorrenze ritorno il risultato in json
 		
 		String out = "{";
 		for(Entry<String, Integer> val : hm.entrySet()) {

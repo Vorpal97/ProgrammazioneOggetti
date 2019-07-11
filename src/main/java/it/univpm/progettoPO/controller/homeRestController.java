@@ -33,11 +33,9 @@ public class homeRestController {
 	 */
 	
 	public static String init() {
-		//http://data.europa.eu/euodp/data/api/3/action/package_show?id=KrER4bHeFuOMIMDyXfrpQ
-		
-		//FormatSelector(url,deep) maps the resource array list of main json
-		
-		ResourceSelector rs = new ResourceSelector("http://localhost/po/response.json","result-resources");
+
+		//FormatSelector(url,deep) maps the resource array list of main json		
+		ResourceSelector rs = new ResourceSelector("http://data.europa.eu/euodp/data/api/3/action/package_show?id=KrER4bHeFuOMIMDyXfrpQ","result-resources");
 		String url = rs.getUrlByFormat("CSV");  //get URL of CSV dataset
 		try{
 			rs.download(url, "t1.csv");			//download it

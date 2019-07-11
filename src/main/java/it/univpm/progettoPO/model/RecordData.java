@@ -1,5 +1,9 @@
 package it.univpm.progettoPO.model;
 
+/*
+ * Classe derivata da Record che è utilizzata per mappare ogni record del DataSet
+ */
+
 public class RecordData extends Record {
 
 	public RecordData() {

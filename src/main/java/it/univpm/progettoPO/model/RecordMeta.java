@@ -1,5 +1,9 @@
 package it.univpm.progettoPO.model;
 
+/*
+ * Classe derivata da Record che mappa i metadati di un record generico
+ */
+
 public class RecordMeta extends Record {
 	
 	public String toJson() {

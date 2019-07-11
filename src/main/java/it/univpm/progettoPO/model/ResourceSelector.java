@@ -61,13 +61,17 @@ public class ResourceSelector {
 			 }
 
 			JSONObject obj = (JSONObject) JSONValue.parseWithException(data);
+			//array che contiene i vari strati in cui può trovarsi resources
 			String[] deep_level = this.array_pos.split("-");
 			ArrayList<JSONObject> deep = new ArrayList<JSONObject>();
 			
+			//mi addentro in profondità nella struttura del json secondo il parametro array_pos che mi indica la gerarchia degli oggetti che lo contengono
 			for(int i = 0; i<deep_level.length -1;i++)
 				deep.add((JSONObject) (obj.get(deep_level[i])));
+			//rendo l'array che ho recuperato addentrandomi
 			JSONArray objA = (JSONArray) deep.get(deep.size()-1).get(deep_level[deep_level.length-1]);
 			
+			//cerco l'url che fornisce il file csv
 			for(Object o: objA){
 			    if ( o instanceof JSONObject ) {
 			        JSONObject o1 = (JSONObject)o; 
@@ -87,7 +91,7 @@ public class ResourceSelector {
 		}
 		return outString;
 	}
-	
+	//scarica il file dall'url ricevuto e lo salva con il nome che gli viene passato
 	public void download(String url, String fileName) throws Exception {
 	    try (InputStream in = URI.create(url).toURL().openStream()) {
 	        Files.copy(in, Paths.get(fileName));

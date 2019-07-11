@@ -1,5 +1,11 @@
 package it.univpm.progettoPO.model;
 
+/*
+ * classe astratta che definisce la struttura di un generico record del dataset csv
+ * da essa derivano 2 sottoclassi
+ * RecordData che è utilizzata per mappare ogni record del DataSet
+ * RecordMeta che mappa i metadati di un record generico
+ */
 
 abstract class Record {
 	
@@ -30,15 +36,4 @@ abstract class Record {
 	
 	abstract String toJson();
 	
-	/*
-	 * abstract String getFreq();
-	 * 
-	 * abstract String getGeo();
-	 * 
-	 * abstract String getUnit();
-	 * 
-	 * abstract String getObj();
-	 * 
-	 * abstract double[] getYears();
-	 */	
 }
