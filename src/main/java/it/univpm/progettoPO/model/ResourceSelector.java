@@ -17,12 +17,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
-public class FormatSelector {
+public class ResourceSelector {
 	
 	private String url;
 	private String array_pos;	// es "result.resources"
 	
-	public FormatSelector(String url, String array_pos) {
+	public ResourceSelector(String url, String array_pos) {
 		this.url = url;
 		this.array_pos = array_pos;
 	}
@@ -75,7 +75,6 @@ public class FormatSelector {
 			        String urlD = (String)o1.get("url");
 			        System.out.println(format + " | " + urlD);
 			        if(format.contains(type)) {
-			        	//this.download(urlD, "t1." + type.toLowerCase());
 			        	outString = urlD;
 			        }
 			    }

@@ -18,28 +18,61 @@ public class DataSet implements DataStats {
 	}
 	
 	public DataSet(String path) {
-		this.setData(path);
+		int e = this.setData(path, 10);
+		if(e > 0)
+			System.out.println("importazione terminata con " + ((e == 10)? "successo" : (10-e) + " errori"));
+			else {
+				System.out.println("importazione fallita con più di " + e + "errori");
+			this.data = null;
+		}
+		
+	}
+
+	public DataSet(String path, int maxErr) {
+		int e = this.setData(path, maxErr);
+		if(e >= 0)
+			System.out.println("importazione terminata con " + ((e == maxErr)? "successo" : (maxErr-e) + " errori"));
+			else {
+				System.out.println("importazione fallita");
+				this.data = null;
+		}
+		
 	}
 
 	public ArrayList<RecordData> getData() {
 		return data;
 	}
 
-	public void setData(String path) {
+	public int setData(String path, int maxErr) {
 		try {
 			BufferedReader fp = new BufferedReader(new FileReader(path));
 			String line = fp.readLine();
-			line = fp.readLine();	//scarto la riga di intestazione
-			while(line != null) {
+			//scarto la riga di intestazione
+			for(line = fp.readLine(); line != null && maxErr >= 0; line = fp.readLine()) {
 				String[] meta = line.split(";");
+				if(meta.length != 4) {
+					System.out.println("Numero di attributi errato!");
+					maxErr--;
+					continue;	//skip at the next line
+				}
 				String[] datis = meta[3].split(",");
+				if(!(datis.length != 17)) {
+					System.out.println("Numero di anni errato!");
+					maxErr--;
+					continue;	//skip at the next line
+				}
 				meta[3] = datis[0];
 				double[] datid = new double[datis.length];
-				for(int i=1;i<datis.length;i++) {
-					datid[i] = Double.parseDouble(datis[i]);
+				try {
+					for(int i=1;i<datis.length;i++) {
+						datid[i] = Double.parseDouble(datis[i]);
+				}
+				}catch(Exception e) {
+					System.out.println("Errore nella conversione dati numerici");
+					maxErr--;
+					continue;	//skip at the next line
 				}
 				data.add(new RecordData(meta[0],meta[1],meta[2],meta[3],datid));
-				line = fp.readLine();
 			}
 			fp.close();
 		} catch (FileNotFoundException e) {
@@ -47,9 +80,16 @@ public class DataSet implements DataStats {
 		} catch (IOException e) {
 			System.out.println("Errore di I/O");
 		}
-		System.out.println("DataSet caricato correttamente!");
+		return maxErr;
 	}
-
+	
+	public boolean isDataNull() {
+		if(data == null)
+			return true;
+		else
+			return false;
+	}
+	
 	@Override
 	public String toString() {
 		
