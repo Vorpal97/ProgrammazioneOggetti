@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.qos.logback.core.util.Loader;
 import it.univpm.progettoPO.model.DataSet;
+import it.univpm.progettoPO.model.FormatSelector;
 import it.univpm.progettoPO.model.RecordMeta;
+
 
 
 
@@ -27,21 +29,24 @@ public class homeRestController {
 	static DataSet setDati;
 	
 	public static String init() {
-		//setDati = new DataSet("/Users/Manuel/eclipse-workspace/Prototipo_programmazione_oggetti/COMP_COMP_AG_X_1.0.csv");
+		String msg = "Dataset caricato correttamente!";
+		//http://data.europa.eu/euodp/data/api/3/action/package_show?id=KrER4bHeFuOMIMDyXfrpQ
 		
-		return"Dataset caricato correttamente!";
+		FormatSelector fs = new FormatSelector("http://localhost/po/response.json","result-resources");
+		String url = fs.getUrlByFormat("CSV");
+		try{
+			fs.download(url, "t1.csv");
+		}catch(Exception e) {
+			msg = "Si è verificato un errore!";
+			e.printStackTrace();
+		}
+		
+		setDati = new DataSet("t1.csv");
+
+		
+		return msg;
 	}
-	
-	  @RequestMapping(value = "/files/", method = RequestMethod.GET)
-	    public void getFile(
-	        @PathVariable("fileID") String fileName, 
-	        HttpServletResponse response) throws IOException {
-	            String src= "https://webgate.ec.europa.eu/comp/redisstat/api/dissemination/sdmx/2.1/data/comp_ag_x?format=csv&compressed=false";
-	            InputStream is = new FileInputStream(src);
-	            IOUtils.copy(is, response.getOutputStream());
-	            response.flushBuffer();
-	    }
-	
+		
 	@GetMapping("/getdata")
 	public String getData() {
 		return setDati.toString();
