@@ -1,10 +1,14 @@
 package it.univpm.progettoPO.model;
 
-/*
- * classe astratta che definisce la struttura di un generico record del dataset csv
- * da essa derivano 2 sottoclassi
- * RecordData che è utilizzata per mappare ogni record del DataSet
- * RecordMeta che mappa i metadati di un record generico
+/**
+ * abstract axis that defines the structure of a generic csv dataset record
+ * from it derive 2 subclasses
+ * 
+ * RecordData which is used to map each DataSet record
+ * RecordMeta which maps the metadata of a generic record
+ * 
+ * @author Manuel
+ *
  */
 
 abstract class Record {

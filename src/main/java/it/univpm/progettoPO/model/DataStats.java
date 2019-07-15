@@ -1,8 +1,12 @@
 package it.univpm.progettoPO.model;
 
-//interfaccia che definisce i metodi per le statistiche
+/**
+ * interface that defines the methods for statistics
+ * @author Manuel
+ *
+ */
 
 public interface DataStats {
 	String getNumberStats(int year);
-	String getStringStats(String field, int sc);
+	String getStringStats(int sc);
 }

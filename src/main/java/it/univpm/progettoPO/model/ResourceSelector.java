@@ -17,6 +17,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
+/**
+ * 
+ * @author Manuel
+ *
+ */
+
 public class ResourceSelector {
 	
 	private String url;
@@ -26,6 +32,12 @@ public class ResourceSelector {
 		this.url = url;
 		this.array_pos = array_pos;
 	}
+	
+	/**
+	 * 
+	 * @param type 		format type of the data to be extracted from the resource array
+	 * @return		URL of resource in format @param
+	 */
 	
 	public String getUrlByFormat(String type) {
 		
@@ -54,7 +66,6 @@ public class ResourceSelector {
 			  
 			   while ( ( line = buf.readLine() ) != null ) {
 				   data+= line;
-				   System.out.println( line );
 			   }
 			 } finally {
 			   in.close();
@@ -83,7 +94,6 @@ public class ResourceSelector {
 			        }
 			    }
 			}
-			System.out.println( "OK" );
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -91,10 +101,17 @@ public class ResourceSelector {
 		}
 		return outString;
 	}
-	//scarica il file dall'url ricevuto e lo salva con il nome che gli viene passato
+	/**
+	 * download the file from the received url and save it with the name that is passed to it
+	 * @param url			url of the file to download
+	 * @param fileName		name of the file to download
+	 * @throws Exception 	file not found or url not available
+	 */
 	public void download(String url, String fileName) throws Exception {
 	    try (InputStream in = URI.create(url).toURL().openStream()) {
 	        Files.copy(in, Paths.get(fileName));
+			System.out.println("Il download del dataset ha avuto successo!");
+
 	    }
 	}
 	

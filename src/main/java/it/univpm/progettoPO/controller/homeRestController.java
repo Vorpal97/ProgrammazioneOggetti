@@ -1,27 +1,22 @@
 package it.univpm.progettoPO.controller;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.qos.logback.core.util.Loader;
 import it.univpm.progettoPO.model.DataSet;
 import it.univpm.progettoPO.model.ResourceSelector;
 import it.univpm.progettoPO.model.RecordMeta;
 
-
-
+/**
+ * 
+ * @author Manuel Manelli
+ *
+ */
 
 @RestController
 public class homeRestController {
@@ -63,19 +58,23 @@ public class homeRestController {
 		
 	}
 		
-	@GetMapping("/getdata")
+	@RequestMapping(value="/getdata", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getData() {
 		return setDati.toString();				//get all dataset in JSON
 	}
 	
-	@GetMapping("/getmeta")
+	@RequestMapping(value="/getmeta", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getMeta() {
 		RecordMeta rm = new RecordMeta();		//get all MetaData in Json
 		return rm.toJson();
 	}
 	
-	//get stats divided by string field and numerical field
-	@RequestMapping(value="/stats/{col}", method = RequestMethod.GET)
+	/** get stats divided by string field and numerical field
+	 * 
+	 * @param column selected parameters for processing stats
+	 * @return is column is integer between 2000 and 2017 returns numericals stats in json format, else return string stats in the same format.
+	 */
+	@RequestMapping(value="/stats/{col}", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getStats(@PathVariable("col") String column) {
 		if (column == "")
 			return"Parametro non valido";
@@ -103,7 +102,7 @@ public class homeRestController {
 		if(sc == -1)
 			return "Parametro non valido, quelli validi sono:\n {FREQ|freq|GEO|geo|UNIT|unit|OBJECTIV|TIME_PERIOD|objectiv|time_period}\n o un anno compreso tra 2000 e 2017 inclusi.";
 		else 
-			return setDati.getStringStats(column, sc); //else print string stats
+			return setDati.getStringStats(sc); //else print string stats
 
 	}
 }

@@ -1,7 +1,9 @@
 package it.univpm.progettoPO.model;
 
-/*
- * Classe derivata da Record che mappa i metadati di un record generico
+/**
+ * Class derived from Record that maps the metadata of a generic record
+ * @author Manuel
+ *
  */
 
 public class RecordMeta extends Record {

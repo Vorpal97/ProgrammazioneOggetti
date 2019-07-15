@@ -5,30 +5,41 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+/**
+ * 
+ * @author Manuel Manelli
+ *
+ */
 
 public class DataSet implements DataStats {
 	
 	private ArrayList<RecordData> data = new ArrayList<RecordData>();
-	
+		
 	public DataSet() {
 		data = null;
 	}
-	//primo costruttore con numero di errori massimi consentiti nel csv pari a 10
+	//primo costruttore con numero di errori massimi consentiti nel csv pari a 3
 	public DataSet(String path) {
-		//setData ritorna il numero di errori del json trovati nella procedura di importazione, se si verificano più di 10 errori l'importazione fallisce
-		int e = this.setData(path, 10);
+		//setData ritorna il numero di errori del json trovati nella procedura di importazione, se si verificano più di 3 errori l'importazione fallisce
+		int e = this.setData(path, 3);
 		if(e > 0)
-			System.out.println("importazione terminata con " + ((e == 10)? "successo" : (10-e) + " errori"));
+			System.out.println("importazione terminata con " + ((e == 3)? "successo" : (3-e) + " errori"));
 			else {
 				System.out.println("importazione fallita con più di " + e + "errori");
 			this.data = null;
 		}
 		
 	}
-	//metodo sovraccaricato che consente di definire un numero massimo di errori tollerabile, per nessun'errore maxErr = 0
+	
+	//
+	/**
+	 * Metodo sovraccaricato che consente di definire un numero massimo di errori tollerabile, per nessun'errore maxErr = 0
+	 * @param path downloaded csv path name
+	 * @param maxErr max number of error allowed during data import process
+	 */
 	public DataSet(String path, int maxErr) {
 		int e = this.setData(path, maxErr);
 		if(e >= 0)
@@ -43,35 +54,41 @@ public class DataSet implements DataStats {
 	public ArrayList<RecordData> getData() {
 		return data;
 	}
-
+	/**
+	 * Real data import method
+	 * @param path		|	same of
+	 * @param maxErr	|	above
+	 * @return	return maxErr, if maxErr = 3 imply no error, if maxErr is between 0 and 3 (extremes excluded) imply data import completed with errors else maxErr = 0 import failed due to csv incompatible format.
+	 */
 	public int setData(String path, int maxErr) {
 		try {
 			BufferedReader fp = new BufferedReader(new FileReader(path));
 			String line = fp.readLine();
 			//scarto la riga di intestazione
-			for(line = fp.readLine(); line != null && maxErr >= 0; line = fp.readLine()) {
+			int k;
+			for(line = fp.readLine(), k = 1; line != null && maxErr >= 0; line = fp.readLine(), k++) {
 				//splitta la riga con il carattere ;
 				String[] meta = line.split(";");
 				//controllo se sono presenti 4 campi, se il numero è diverso decremento maxErr (aggiungo un errore) e scarto la riga passando alla prossima iterazione
 				if(meta.length != 4) {
-					System.out.println("Numero di attributi errato!");
+					System.out.println("### Numero di attributi errato! Scarto la riga: " + k);
 					maxErr--;
 					continue;	//skip at the next line
 				}
 				String[] datis = meta[3].split(",");
-				if(!(datis.length != 17)) {
-					System.out.println("Numero di anni errato!");
+				if(datis.length != 19) { 							//18 anni da 2000 a 2017 + ultimo campo stringa che estraggo grazie alla ','
+					System.out.println("###Numero di anni errato! Scarto la riga: " + k);
 					maxErr--;
 					continue;	//skip at the next line
 				}
-				meta[3] = datis[0];
+				meta[3] = datis[0];									// assegno il 4 campo stringa al vettore delle stringhe
 				double[] datid = new double[datis.length];
 				try {
 					for(int i=1;i<datis.length;i++) {
 						datid[i] = Double.parseDouble(datis[i]);
 				}
 				}catch(Exception e) {
-					System.out.println("Errore nella conversione dati numerici");
+					System.out.println("###Errore nella conversione dati numerici! Scarto la riga: " + k);
 					maxErr--;
 					continue;	//skip at the next line
 				}
@@ -105,8 +122,12 @@ public class DataSet implements DataStats {
 		
 		return out;
 	}
-	
-	//serie di metodi per calcolare le statistiche sul dataset
+		
+	/**
+	 * methods to calculate statistics on the dataset
+	 * @param year year to be processed
+	 * @return calculated statistic to return
+	 */
 	
 	private double getAvg(int year) {
 		return this.getSum(year) / data.size();
@@ -161,7 +182,11 @@ public class DataSet implements DataStats {
 		return data.size();
 	}
 	
-	//fornisce il json che contiene tutte le statistiche numeriche
+	
+	/**
+	 * Provides the json that contains all the numeric statistics
+	 * @param year for numerical stats
+	 */
 	
 	public String getNumberStats(int year) {
 		String out = "{\"Year\":" + String.valueOf(year) +", " +
@@ -173,14 +198,17 @@ public class DataSet implements DataStats {
 					 "\"Count\":" + String.valueOf(this.getCount(year)) +"}";
 		return out;
 	}
-	// fornisce il json che contiene tutte le statistiche sulle stringhe a seconda della colonna specificata
-	public String getStringStats(String field, int sc) {
+	
+	/**
+	 * provides the json that contains all the string statistics depending on the specified column
+	 * @param sc indicates the string field to be processed
+	 */
+	public String getStringStats(int sc) {
 		
-		field.toUpperCase();
 
 		HashMap <String,Integer> hm = new HashMap<String,Integer>();
 		
-		//in base alla colonna selezionata conto le occorrenze degli elementi del campo scelto tramite una hash map <String,Integer>
+		//based on the selected column, I take the occurrences of the elements of the field chosen using a hash map <String,Integer>
 		switch(sc) {
 			case 0:
 				for(RecordData rd : data) {
@@ -228,7 +256,7 @@ public class DataSet implements DataStats {
 
 		}
 		
-		//terminato il conteggio delle occorrenze ritorno il risultato in json
+		//finished counting of occurrences return the result in json
 		
 		String out = "{";
 		for(Entry<String, Integer> val : hm.entrySet()) {
